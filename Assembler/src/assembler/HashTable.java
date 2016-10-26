@@ -15,7 +15,7 @@ public class HashTable {
      * @param size 
      */
     public HashTable(int size) {
-        this.size = 100;
+        this.size = size;
         this.deletedRecord = new DataItem("deleted");
         this.data = new DataItem[this.getNextPrime(this.size)];
     }
