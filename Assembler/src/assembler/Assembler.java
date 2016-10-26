@@ -1,9 +1,6 @@
 package assembler;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -11,20 +8,26 @@ import java.util.Scanner;
  * @author Michael Frederick (n00725913)
  */
 public class Assembler {
-
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         int lineCount;
+        int location;
+        String opCodeList = "SICOPS.txt";
         File file;
         HashTable symbols;
+        OPHashTable opcodes;
+
         if (args[0] != null || !args[0].isEmpty()) {
             file = new File(args[0]);
             if (!file.isDirectory() && file.exists()) {
                 try {
                     lineCount = getLineCount(file);
                     symbols = new HashTable(lineCount);
+                    lineCount = getLineCount(new File(opCodeList));
+                    opcodes = new OPHashTable(lineCount);
                 }
                 catch (Exception e) {
                     System.out.println(e.getMessage());
