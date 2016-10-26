@@ -21,34 +21,6 @@ public class HashTable {
     }
     
     /**
-     * Hashes the string by each character value and Horner's Polynomial
-     * @param str
-     * @param maxSize
-     * @return int Index
-     */
-    private int hashFunction(String str, int maxSize) {
-        int value;
-        char[] charArray = str.toCharArray();
-        int temp;
-        value = charArray[0];
-        for (int i = 1; i < charArray.length; i++) {
-            temp = charArray[i];
-            value = (value * 26 + temp) % maxSize;
-        }
-        return value;
-    }
-    
-    /**
-     * How I resolve a data collision
-     * @param index
-     * @param collisions
-     * @return int Next Index to be checked
-     */
-    private int collisionResolver(int index, int collisions) {
-        return ((index * index) + collisions) % this.size;
-    }
-    
-    /**
      * Inserts the DataItem into the array, if item with the same label does not exist
      * @param item 
      */
@@ -101,9 +73,42 @@ public class HashTable {
         }
     }
     
+    public DataItem getDeletedItem() {
+        return this.deletedRecord;
+    }
+    
     public void printTable() {
         // Do something here
     }
+    
+    /**
+     * Hashes the string by each character value and Horner's Polynomial
+     * @param str
+     * @param maxSize
+     * @return int Index
+     */
+    private int hashFunction(String str, int maxSize) {
+        int value;
+        char[] charArray = str.toCharArray();
+        int temp;
+        value = charArray[0];
+        for (int i = 1; i < charArray.length; i++) {
+            temp = charArray[i];
+            value = (value * 26 + temp) % maxSize;
+        }
+        return value;
+    }
+    
+    /**
+     * How I resolve a data collision
+     * @param index
+     * @param collisions
+     * @return int Next Index to be checked
+     */
+    private int collisionResolver(int index, int collisions) {
+        return ((index * index) + collisions) % this.size;
+    }
+    
     
     // Method from pg. 541 of Data Structures and Algorithms in Java by Robert Lafore
     private int getNextPrime(int min){
