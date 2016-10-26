@@ -10,10 +10,14 @@ public class HashTable {
     private int size;
     private DataItem deletedRecord;
     
+    /**
+     * Generates a HashTable
+     * @param size 
+     */
     public HashTable(int size) {
         this.size = 100;
         this.deletedRecord = new DataItem("deleted");
-        this.data = new DataItem[this.size];
+        this.data = new DataItem[this.getNextPrime(this.size)];
     }
     
     /**
@@ -95,6 +99,30 @@ public class HashTable {
                 insertionIndex = this.collisionResolver(insertionIndex, collisions);
             }
         }
+    }
+    
+    public void printTable() {
+        // Do something here
+    }
+    
+    // Method from pg. 541 of Data Structures and Algorithms in Java by Robert Lafore
+    private int getNextPrime(int min){
+        for(int i = min + 1; i < Integer.MAX_VALUE - 1; i++){
+            if(isPrime(i)){
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    // Method from pg. 541 of Data Structures and Algorithms in Java by Robert Lafore
+    private boolean isPrime(int p){
+        for(int i = 2; (i * i) <= p; i++){
+            if( (p % i) == 0){
+                return false;
+            }
+        }
+        return true;
     }
     
 }//end Class HashTable
