@@ -16,6 +16,13 @@ public class OPCode {
     private int format;
     private String unknown;
 
+    public OPCode(String label, String opcode, int format, String unknown) {
+        this.label = label;
+        this.opcode = opcode;
+        this.format = format;
+        this.unknown = unknown;
+    }
+
     /**
      * Get the value of unknown
      * @return the value of unknown

@@ -15,9 +15,9 @@ public class HashTable {
      * @param size 
      */
     public HashTable(int size) {
-        this.size = size;
+        this.size = this.getNextPrime(size);
         this.deletedRecord = new DataItem("deleted");
-        this.data = new DataItem[this.getNextPrime(this.size)];
+        this.data = new DataItem[this.size];
     }
     
     /**
@@ -38,6 +38,10 @@ public class HashTable {
             else if (item.equals(this.data[insertionIndex])) {
                 //System.out.println("ERROR: '" + item.getLabel() + "' already exists at index: " + insertionIndex);
                 searching = false;
+            }
+            else if (collisions > this.size) {
+                // Switching to Linear Probing
+                insertionIndex = (insertionIndex + 1) % this.size;
             }
             else {
                 // Going to next cell
@@ -113,7 +117,7 @@ public class HashTable {
     // Method from pg. 541 of Data Structures and Algorithms in Java by Robert Lafore
     private int getNextPrime(int min){
         for(int i = min + 1; i < Integer.MAX_VALUE - 1; i++){
-            if(isPrime(i)){
+            if(isPrime(i) && (i / 2) > min){
                 return i;
             }
         }

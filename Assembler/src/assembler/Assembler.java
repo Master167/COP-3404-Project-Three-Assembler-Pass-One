@@ -2,6 +2,7 @@ package assembler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -27,7 +28,7 @@ public class Assembler {
                     lineCount = getLineCount(file);
                     symbols = new HashTable(lineCount);
                     lineCount = getLineCount(new File(opCodeList));
-                    opcodes = new OPHashTable(lineCount);
+                    opcodes = buildOPTable(lineCount, opCodeList);
                 }
                 catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -53,6 +54,26 @@ public class Assembler {
             }
         
         return lineCount;
+    }
+    
+    private static OPHashTable buildOPTable(int size, String opCodeListFilename) throws FileNotFoundException {
+        OPHashTable table = new OPHashTable(size);
+        File file = new File(opCodeListFilename);
+        Scanner fileScanner = new Scanner(file);
+
+        while (fileScanner.hasNext()) {
+            StringTokenizer tokenMaker = new StringTokenizer(fileScanner.nextLine());
+            if (tokenMaker.countTokens() == 4) {
+                // OPCODE
+                table.insertData(new OPCode(tokenMaker.nextToken(),tokenMaker.nextToken(), Integer.parseInt(tokenMaker.nextToken()), tokenMaker.nextToken()));
+            }
+            else if (tokenMaker.countTokens() == 2) {
+                // Register Symbol
+                table.insertData(new OPCode(tokenMaker.nextToken(), tokenMaker.nextToken(), -1, null));
+            }
+        }
+        
+        return table;
     }
     
 }
