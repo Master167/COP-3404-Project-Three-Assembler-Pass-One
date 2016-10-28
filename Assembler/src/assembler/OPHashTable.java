@@ -23,6 +23,10 @@ public class OPHashTable {
         this.data = new OPCode[this.size];
     }
     
+    public OPCode getOPCode(int index) {
+        return this.data[index];
+    }
+    
     /**
      * Inserts the DataItem into the array, if item with the same label does not exist
      * @param item 

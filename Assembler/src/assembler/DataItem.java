@@ -11,6 +11,10 @@ public class DataItem {
     private String operand;
     private String comments;
     private String error;
+    private int address;
+    
+    private int commandLength;
+    
 
     /**
      * For the Deleted Item
@@ -37,6 +41,34 @@ public class DataItem {
         this.operand = operand;
         this.comments = comments;
     } 
+    
+    /**
+     * Sets the value of Address
+     * @param address
+     */
+    public void setAddress(int address) {
+        this.address = address;
+    }
+    
+    public int getAddress() {
+        return this.address;
+    }
+    
+    /**
+     * Sets the value of commandLength
+     * @param length
+     */
+    public void setCommandLength(int length) {
+        this.commandLength = length;
+    }
+    
+    /**
+     * Gets the value of commandLength
+     * @return the value of commandLength
+     */
+    public int getCommandLength() {
+        return this.commandLength;
+    }
 
     /**
      * Get the value of label

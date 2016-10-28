@@ -15,7 +15,6 @@ public class Assembler {
      */
     public static void main(String[] args) {
         int lineCount;
-        int location;
         String opCodeList = "SICOPS.txt";
         File file;
         HashTable symbols;
@@ -29,6 +28,7 @@ public class Assembler {
                     symbols = new HashTable(lineCount);
                     lineCount = getLineCount(new File(opCodeList));
                     opcodes = buildOPTable(lineCount, opCodeList);
+                    programAssemble(file, symbols, opcodes);
                 }
                 catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -74,6 +74,76 @@ public class Assembler {
         }
         
         return table;
+    }   
+
+    private static void programAssemble(File file, HashTable symbols, OPHashTable opcodes) throws FileNotFoundException {
+        int address;
+        DataItem item;
+        String programLine;
+        Scanner programScanner = new Scanner(file);
+        
+        //Read First line
+        programLine = programScanner.nextLine();
+        if ("START".equals(programLine.substring(10, 16).trim().toUpperCase())) {
+            address = Integer.parseInt(programLine.substring(19, 28).trim());
+            symbols.insertData(buildCommand(programLine, opcodes));
+        }
+        else {
+            address = 0;
+        }
+        while ((programLine = programScanner.nextLine()) != null || "END".equals(programLine.substring(10, 16).trim().toUpperCase())) {
+            if (programLine.charAt(0) != '.') {
+                item = buildCommand(programLine, opcodes);
+                item.setAddress(address);
+                address += item.getCommandLength();
+            }
+        }
+        System.out.printf("Done%n");
+    }
+    
+    private static DataItem buildCommand(String line, OPHashTable opTable) {
+        String label = line.substring(0, 7).trim();
+        String mneumonic = line.substring(10, 16).trim();
+        String operand = line.substring(19, 28).trim();
+        String comments = line.substring(31).trim();
+        String error = "";
+        int index;
+        char operandFlag;
+        boolean extended;
+        DataItem item;
+        
+        // Validate Strings
+        if (isNullOrEmpty(label)) {
+            error = " No Label Found ";
+        }
+        
+        if (isNullOrEmpty(mneumonic) || (index = opTable.searchForData(mneumonic)) == -1) {
+            error += " Invalid mneomonic ";
+        }
+        else {
+            // Get opcode and calculate length, You have an index number
+        }
+        
+        if (isNullOrEmpty(operand)) {
+            error += " No Operand ";
+        }
+
+        extended = line.charAt(9) == '+';
+        operandFlag = line.charAt(18);
+        
+        item = new DataItem(label, extended, mneumonic, operandFlag, operand, comments);
+        if (!isNullOrEmpty(error)) {
+            item.setError(error);
+        }
+        return item;
+    }
+    
+    private static boolean isNullOrEmpty(String str) {
+        boolean a = false;
+        if ("".equals(str) || str == null) {
+            a = true;
+        }
+        return a;
     }
     
 }
