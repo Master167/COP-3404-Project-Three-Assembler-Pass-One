@@ -12,7 +12,6 @@ public class DataItem {
     private String comments;
     private String error;
     private int address;
-    
     private int commandLength;
     
 
