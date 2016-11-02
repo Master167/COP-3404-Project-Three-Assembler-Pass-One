@@ -20,7 +20,7 @@ public class Assembler {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        SicAssembler sic = new SicAssembler(args);
+        SicAssembler passOne = new SicAssembler(args);
     }
     
 }

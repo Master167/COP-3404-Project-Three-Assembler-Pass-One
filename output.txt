@@ -1,0 +1,37 @@
+100	ADDRES    START    100                               
+. tests pc forward addressing
+. tests base addressing
+. tests pc backward addressing
+100	NOW      +LDB     #BEGIN              load base register 
+104	XXX       BASE     BEGIN              tell assembler  
+104	YYY       LDA      BE                 A <- (m..m+2)    
+103	EN        RESW     4                  
+10f	BE        WORD     2                              
+112	BEGIN     RESW     1
+115	JUNK      RESW     2200                              
+1add	THERE     RESW     1                              
+1ae0	ZZZ       LDA      JUNK                               
+1ae3	MMM       STA      THERE                              
+1ae6	          END      NOW                              
+100	ADDRES    START    100                               
+. tests pc forward addressing
+. tests base addressing
+. tests pc backward addressing
+100	NOW      +LDB     #BEGIN              load base register 
+104	XXX       BASE     BEGIN              tell assembler  
+104	YYY       LDA      BE                 A <- (m..m+2)    
+103	EN        RESW     4                  
+10f	BE        WORD     2                              
+112	BEGIN     RESW     1
+100	ADDRES    START    100                               
+. tests pc forward addressing
+. tests base addressing
+. tests pc backward addressing
+100	NOW      +LDB     #BEGIN              load base register 
+104	XXX       BASE     BEGIN              tell assembler  
+100	ADDRES    START    100                               
+. tests pc forward addressing
+. tests base addressing
+. tests pc backward addressing
+100	NOW      +LDB     #BEGIN              load base register 
+104	XXX       BASE     BEGIN              tell assembler  

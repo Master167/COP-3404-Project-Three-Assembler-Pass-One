@@ -13,7 +13,7 @@ public class DataItem {
     private String error;
     private int address;
     private int commandLength;
-    
+    private String indexEntry;    
 
     /**
      * For the Deleted Item
@@ -40,6 +40,14 @@ public class DataItem {
         this.operand = operand;
         this.comments = comments;
     } 
+    
+    public String getIndexEntry() {
+        return indexEntry;
+    }
+
+    public void setIndexEntry(String indexEntry) {
+        this.indexEntry = indexEntry;
+    }
     
     /**
      * Sets the value of Address

@@ -19,10 +19,11 @@ import java.util.StringTokenizer;
  * @author Michael
  */
 public class SicAssembler {
-        
+
     private static final String OUTPUTFILE = "output.txt";
     private HashTable symbols;
     private OPHashTable opcodes;
+    private String[] assemblerDirectives = {"BASE", "LTORG", "START", "END"};
     // Build something for literals
     
     /**
@@ -93,6 +94,7 @@ public class SicAssembler {
         DataItem item;
         String programLine;
         Scanner programScanner = new Scanner(file);
+        int exe = 0;
         
         // To write to file
         try {
@@ -103,15 +105,17 @@ public class SicAssembler {
             //Read First line
             programLine = programScanner.nextLine();
             if ("START".equals(programLine.substring(10, 16).trim().toUpperCase())) {
-                address = Integer.parseInt(programLine.substring(19, 28).trim());
+                address = Integer.parseInt(programLine.substring(19, 28).trim(), 16);
                 symbols.insertData(buildCommand(programLine, opcodes));
             }
             else {
                 address = 0;
             }
+            writeToFile(Integer.toHexString(address)+ "\t" + programLine);
             while ((programLine = programScanner.nextLine()) != null && !"END".equals(programLine.substring(10, 16).trim().toUpperCase())) {
                 if (programLine.charAt(0) == '.') {
                     // Comment Line
+                    writeToFile(programLine);
                 }
                 else if (programLine.charAt(0) == '.') {
                     // Literal. Deal with it
@@ -122,9 +126,12 @@ public class SicAssembler {
                 else {
                     item = buildCommand(programLine, opcodes);
                     item.setAddress(address);
+                    writeToFile(Integer.toHexString(address) + "\t" + programLine);
                     address += item.getCommandLength();
                 }
+                exe++;
             }
+            writeToFile(Integer.toHexString(address) + "\t" + programLine);
             System.out.printf("Done%n");
         }
         catch (IOException ex) {
@@ -139,10 +146,13 @@ public class SicAssembler {
         String operand = null;
         String comments = null;
         String error = "";
+        String indexEntry = null;
         int index;
+        int commandLength;
         char operandFlag;
         boolean extended;
         DataItem item;
+        OPCode opc;
         StringTokenizer tokenMaker = new StringTokenizer(line);
         
         while (tokenMaker.hasMoreTokens()) {
@@ -161,6 +171,7 @@ public class SicAssembler {
                     if (temp.contains(",")) {
                         index = temp.indexOf(",");
                         operand = temp.substring(0, index);
+                        indexEntry = temp.substring(index + 1).trim();
                     }
                     else {
                         operand = temp;
@@ -182,14 +193,6 @@ public class SicAssembler {
         if (isNullOrEmpty(label)) {
             error = " No Label Found ";
         }
-        
-        if (isNullOrEmpty(mneumonic) || (index = opTable.searchForData(mneumonic)) == -1) {
-            error += " Invalid mneomonic "; // Do stuff for assembler directives and reserved words
-        }
-        else {
-            // Get opcode and calculate length, You have an index number
-        }
-        
         if (isNullOrEmpty(operand)) {
             error += " No Operand ";
         }
@@ -198,6 +201,51 @@ public class SicAssembler {
         operandFlag = line.charAt(18);
         
         item = new DataItem(label, extended, mneumonic, operandFlag, operand, comments);
+        
+        if (isNullOrEmpty(mneumonic)) {
+            error += " Invalid mneomonic ";
+            commandLength = 0;
+        }
+        else {
+            index = opTable.searchForData(mneumonic);
+            if (index == -1) {
+                // It's not an opcode
+                // Do stuff for assembler directives and reserved words
+                if (searchArray(this.assemblerDirectives, mneumonic)) {
+                    // ASSEMBLER DIRECTIVE
+                    commandLength = 0;
+                }
+                else if (mneumonic.equalsIgnoreCase("RESW")){
+                    commandLength = 3 * Integer.parseInt(operand);
+                }
+                else if (mneumonic.equalsIgnoreCase("RESB")){
+                    commandLength = Integer.parseInt(operand);
+                }
+                else if (mneumonic.equalsIgnoreCase("WORD")) {
+                    commandLength = 3;
+                }
+                else if (mneumonic.equalsIgnoreCase("BYTE")) {
+                    commandLength = Integer.toHexString((Integer.parseInt(operand))).length();
+                }
+                else {
+                    error += " Invalid Mneumonic ";
+                    commandLength = 0;
+                }
+            }
+            else {
+                // Calculate the commandLength
+                opc = opTable.getOPCode(index);
+                commandLength = opc.getFormat();
+            }
+        }
+        // Get commandLength
+        item.setCommandLength(commandLength);
+        
+        
+        if (!isNullOrEmpty(indexEntry)) {
+            item.setIndexEntry(indexEntry);
+        }
+
         if (!isNullOrEmpty(error)) {
             item.setError(error);
         }
@@ -212,6 +260,17 @@ public class SicAssembler {
         return a;
     }
     
+    private boolean searchArray(String[] array, String str) {
+        boolean found = false;
+        for(String temp : array) {
+            if (temp.equals(str)) {
+                found = true;
+            }
+        }
+        
+        return found;
+    }
+    
     /**
      * Outputs the message to the Output file
      * @param message 
@@ -222,7 +281,7 @@ public class SicAssembler {
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                 PrintWriter outputWriter = new PrintWriter(bufferedWriter);
             ) {
-            outputWriter.printf(message);
+            outputWriter.println(message); 
         }
         catch (IOException ex) {
             System.out.printf("%s%n", ex.getMessage());
