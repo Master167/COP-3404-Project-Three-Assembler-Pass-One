@@ -24,20 +24,22 @@ public class HashTable {
      * Inserts the DataItem into the array, if item with the same label does not exist
      * @param item 
      */
-    public void insertData(DataItem item) {
+    public String insertData(DataItem item) {
         int insertionIndex = this.hashFunction(item.getLabel(), this.size);
         int collisions = 0;
         boolean searching = true;
+        String error = "";
         
         while (searching) {
             if (this.data[insertionIndex] == null) {
                 this.data[insertionIndex] = item;
-                //System.out.println("Inserting '" + item.getLabel() + "' with value: " + item.getValue() + " at index: " + insertionIndex + " with " + collisions);
                 searching = false;
             }
             else if (item.equals(this.data[insertionIndex])) {
-                //System.out.println("ERROR: '" + item.getLabel() + "' already exists at index: " + insertionIndex);
-                searching = false;
+                error = "Duplicate Label";
+                //searching = false;
+                collisions++;
+                insertionIndex = this.collisionResolver(insertionIndex, collisions);
             }
             else if (collisions > this.size) {
                 // Switching to Linear Probing
@@ -49,7 +51,7 @@ public class HashTable {
                 insertionIndex = this.collisionResolver(insertionIndex, collisions);
             }
         }
-        
+        return error;
     }
 
     /**

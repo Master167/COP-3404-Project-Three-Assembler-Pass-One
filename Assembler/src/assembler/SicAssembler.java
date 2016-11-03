@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package assembler;
 
 import java.io.BufferedWriter;
@@ -11,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -25,6 +21,7 @@ public class SicAssembler {
     private OPHashTable opcodes;
     private String[] assemblerDirectives = {"BASE", "LTORG", "START", "END"};
     // Build something for literals
+    private ArrayList<String> literals = new ArrayList<String>();
     
     /**
      * @param args the command line arguments
@@ -91,6 +88,7 @@ public class SicAssembler {
 
     private void programAssemble(File file, HashTable symbols, OPHashTable opcodes) throws FileNotFoundException {
         int address;
+        String temp;
         DataItem item;
         String programLine;
         Scanner programScanner = new Scanner(file);
@@ -106,6 +104,7 @@ public class SicAssembler {
             programLine = programScanner.nextLine();
             if ("START".equals(programLine.substring(10, 16).trim().toUpperCase())) {
                 address = Integer.parseInt(programLine.substring(19, 28).trim(), 16);
+                // Because it's the first line, I don't care
                 symbols.insertData(buildCommand(programLine, opcodes));
             }
             else {
@@ -117,16 +116,19 @@ public class SicAssembler {
                     // Comment Line
                     writeToFile(programLine);
                 }
-                else if (programLine.charAt(0) == '.') {
-                    // Literal. Deal with it
-                }
                 else if (false) {
                     //Watch for LTORG
                 }
                 else {
                     item = buildCommand(programLine, opcodes);
                     item.setAddress(address);
+                    if (!isNullOrEmpty(temp = symbols.insertData(item))) {
+                        item.addError(temp);
+                    }
                     writeToFile(Integer.toHexString(address) + "\t" + programLine);
+                    if (!isNullOrEmpty(item.getError())) {
+                        writeToFile("----- ERROR:" + item.getError() + "-----");
+                    }
                     address += item.getCommandLength();
                 }
                 exe++;
@@ -177,6 +179,9 @@ public class SicAssembler {
                         operand = temp;
                     }
                 }
+                else if (temp.charAt(0) == '=') {
+                    literals.add(temp);
+                }
                 else {
                     operand = temp;
                 }
@@ -215,16 +220,16 @@ public class SicAssembler {
                     // ASSEMBLER DIRECTIVE
                     commandLength = 0;
                 }
-                else if (mneumonic.equalsIgnoreCase("RESW")){
+                else if ("RESW".equalsIgnoreCase(mneumonic)){
                     commandLength = 3 * Integer.parseInt(operand);
                 }
-                else if (mneumonic.equalsIgnoreCase("RESB")){
+                else if ("RESB".equalsIgnoreCase(mneumonic)){
                     commandLength = Integer.parseInt(operand);
                 }
-                else if (mneumonic.equalsIgnoreCase("WORD")) {
+                else if ("WORD".equalsIgnoreCase(mneumonic)) {
                     commandLength = 3;
                 }
-                else if (mneumonic.equalsIgnoreCase("BYTE")) {
+                else if ("BYTE".equalsIgnoreCase(mneumonic)) {
                     commandLength = Integer.toHexString((Integer.parseInt(operand))).length();
                 }
                 else {
@@ -238,7 +243,7 @@ public class SicAssembler {
                 commandLength = opc.getFormat();
             }
         }
-        // Get commandLength
+        // Set commandLength
         item.setCommandLength(commandLength);
         
         
@@ -271,6 +276,23 @@ public class SicAssembler {
         return found;
     }
     
+    private void printLiterals(int currentAddress) {
+        int number;
+        if (literals.size() > 0) {
+            for (String lit : literals) {
+                
+            }
+        }
+    }
+    
+    private int getLengthOfLiteral(String literal) {
+        return 0;
+    }
+    
+    private String getValueOfLiteral(String literal) {
+        return "";
+    }
+    
     /**
      * Outputs the message to the Output file
      * @param message 
@@ -281,7 +303,8 @@ public class SicAssembler {
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                 PrintWriter outputWriter = new PrintWriter(bufferedWriter);
             ) {
-            outputWriter.println(message); 
+            //outputWriter.println(message); 
+            System.out.println(message);
         }
         catch (IOException ex) {
             System.out.printf("%s%n", ex.getMessage());

@@ -139,6 +139,15 @@ public class DataItem {
     public void setError(String error) {
         this.error = error;
     }
+    
+    public void addError(String er) {
+        if (this.error == null || "".equals(this.error)) {
+            this.error = " " + er;
+        }
+        else {
+            this.error += " " + er;
+        }
+    }
 
     /**
      * Returns True if o is a DataItem with the same label
