@@ -40,6 +40,10 @@ public class SicAssembler {
                     lineCount = getLineCount(new File(opCodeList));
                     opcodes = buildOPTable(lineCount, opCodeList);
                     programAssemble(file, symbols, opcodes);
+                    // Throw some blank lines down
+                    writeToFile("");
+                    writeToFile("");
+                    symbols.printTable();
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.out);
@@ -134,7 +138,6 @@ public class SicAssembler {
                 exe++;
             }
             writeToFile(Integer.toHexString(address) + "\t" + programLine);
-            System.out.printf("Done%n");
         }
         catch (IOException ex) {
             System.out.printf("%s%n", ex.getMessage());
@@ -297,14 +300,14 @@ public class SicAssembler {
      * Outputs the message to the Output file
      * @param message 
      */
-    private void writeToFile(String message) {
+    public static void writeToFile(String message) {
         try (   
                 FileWriter fileWriter = new FileWriter(OUTPUTFILE, true);
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                 PrintWriter outputWriter = new PrintWriter(bufferedWriter);
             ) {
-            //outputWriter.println(message); 
-            System.out.println(message);
+            outputWriter.println(message); 
+            //System.out.println(message);
         }
         catch (IOException ex) {
             System.out.printf("%s%n", ex.getMessage());

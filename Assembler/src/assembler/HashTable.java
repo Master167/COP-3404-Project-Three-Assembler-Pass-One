@@ -1,5 +1,9 @@
 package assembler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
 /**
  * Builds and contains a DataItem table based on the input file given
  * @author Michael Frederick (n00725913)
@@ -23,6 +27,7 @@ public class HashTable {
     /**
      * Inserts the DataItem into the array, if item with the same label does not exist
      * @param item 
+     * @return  
      */
     public String insertData(DataItem item) {
         int insertionIndex = this.hashFunction(item.getLabel(), this.size);
@@ -84,7 +89,22 @@ public class HashTable {
     }
     
     public void printTable() {
-        // Do something here
+        ArrayList<DataItem> list = new ArrayList<DataItem>(Arrays.asList(data));
+        Iterator iterator = list.iterator();
+        DataItem item;
+        Object temp;
+        int index;
+        //System.out.printf("Location\tLabel  \tAddress\t%n");
+        SicAssembler.writeToFile(String.format("Location\tLabel  \tAddress\t"));
+        while (iterator.hasNext()) {
+            temp = iterator.next();
+            if ((temp != null ) && (temp instanceof DataItem)) {
+                index = list.indexOf(temp);
+                item = (DataItem)temp;
+                //System.out.printf("%-8d\t%s\t%7s%n", index, item.getLabel(), Integer.toHexString(item.getAddress()));
+                SicAssembler.writeToFile(String.format("%-8d\t%s\t%7s", index, item.getLabel(), Integer.toHexString(item.getAddress())));
+            }
+        }
     }
     
     /**

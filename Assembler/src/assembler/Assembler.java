@@ -1,12 +1,4 @@
 package assembler;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 /**
  *
