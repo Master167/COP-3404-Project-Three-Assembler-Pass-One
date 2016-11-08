@@ -96,7 +96,6 @@ public class SicAssembler {
         DataItem item;
         String programLine;
         Scanner programScanner = new Scanner(file);
-        int exe = 0;
         
         // To write to file
         try {
@@ -120,22 +119,25 @@ public class SicAssembler {
                     // Comment Line
                     writeToFile(programLine);
                 }
-                else if (false) {
-                    //Watch for LTORG
-                }
                 else {
                     item = buildCommand(programLine, opcodes);
                     item.setAddress(address);
                     if (!isNullOrEmpty(temp = symbols.insertData(item))) {
                         item.addError(temp);
                     }
+                    if (item.getOperandFlag() == '=') {
+                        // It's a operand is a literal
+                        literals.add(item.getOperand());
+                    }
                     writeToFile(Integer.toHexString(address) + "\t" + programLine);
                     if (!isNullOrEmpty(item.getError())) {
                         writeToFile("----- ERROR:" + item.getError() + "-----");
                     }
                     address += item.getCommandLength();
+                    if ("LTORG".equals(item.getMneumonic())) {
+                        address = this.printLiterals(address);
+                    }
                 }
-                exe++;
             }
             writeToFile(Integer.toHexString(address) + "\t" + programLine);
         }
@@ -170,7 +172,7 @@ public class SicAssembler {
                 mneumonic = temp;
             }
             else if (17 <= index && index < 28) {
-                if (temp.charAt(0) == '#' || temp.charAt(0) == '@') {
+                if (temp.charAt(0) == '#' || temp.charAt(0) == '@' || temp.charAt(0) == '=') {
                     // Operand has a flag
                     temp = temp.substring(1);
                     if (temp.contains(",")) {
@@ -205,7 +207,7 @@ public class SicAssembler {
             error += " No Operand ";
         }
 
-        extended = line.charAt(9) == '+';
+        extended = (line.charAt(9) == '+');
         operandFlag = line.charAt(18);
         
         item = new DataItem(label, extended, mneumonic, operandFlag, operand, comments);
@@ -279,13 +281,14 @@ public class SicAssembler {
         return found;
     }
     
-    private void printLiterals(int currentAddress) {
-        int number;
+    private int printLiterals(int currentAddress) {
+        int number = 0;
         if (literals.size() > 0) {
             for (String lit : literals) {
                 
             }
         }
+        return currentAddress;
     }
     
     private int getLengthOfLiteral(String literal) {
@@ -313,4 +316,5 @@ public class SicAssembler {
             System.out.printf("%s%n", ex.getMessage());
         }
     }
+    
 }
