@@ -41,6 +41,13 @@ public class DataItem {
         this.comments = comments;
     } 
     
+    // For Literals
+    public DataItem(String label, String mneumonic, int commandLength) {
+        this.label = label;
+        this.mneumonic = mneumonic;
+        this.commandLength = commandLength;
+    }
+    
     public String getIndexEntry() {
         return indexEntry;
     }

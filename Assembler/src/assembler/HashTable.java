@@ -62,8 +62,9 @@ public class HashTable {
     /**
      * Searches the Data array for the DataItem with the same string
      * @param key 
+     * @return index
      */
-    public void searchForData(String key) {
+    public int searchForData(String key) {
         int insertionIndex = this.hashFunction(key, this.size);
         int collisions = 0;
         boolean searching = true;
@@ -72,16 +73,23 @@ public class HashTable {
             if (this.data[insertionIndex] == null || this.data[insertionIndex].equals(deletedRecord)) {
                 //System.out.println("ERROR: '" + key + "' not found");
                 searching = false;
+                insertionIndex = -1;
             }
             else if (this.data[insertionIndex].getLabel().equals(key)) {
                 //System.out.println("'" + key + "' with value: " + this.data[insertionIndex].getValue() + " found at index: " + insertionIndex);
                 searching = false;
+            }
+            else if (collisions > this.size) {
+                // Switching to Linear Probing
+                insertionIndex = (insertionIndex + 1) % this.size;
             }
             else {
                 collisions++;
                 insertionIndex = this.collisionResolver(insertionIndex, collisions);
             }
         }
+        
+        return insertionIndex;
     }
     
     public DataItem getDeletedItem() {
