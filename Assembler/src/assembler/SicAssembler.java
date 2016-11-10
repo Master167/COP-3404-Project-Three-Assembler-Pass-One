@@ -172,7 +172,7 @@ public class SicAssembler {
                 mneumonic = temp;
             }
             else if (17 <= index && index < 28) {
-                if (temp.charAt(0) == '#' || temp.charAt(0) == '@' || temp.charAt(0) == '=') {
+                if (temp.charAt(0) == '#' || temp.charAt(0) == '@') {
                     // Operand has a flag
                     temp = temp.substring(1);
                     if (temp.contains(",")) {
@@ -186,6 +186,7 @@ public class SicAssembler {
                 }
                 else if (temp.charAt(0) == '=') {
                     literals.add(temp);
+                    operand = temp;
                 }
                 else {
                     operand = temp;
