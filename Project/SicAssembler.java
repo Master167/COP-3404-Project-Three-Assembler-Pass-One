@@ -116,6 +116,9 @@ public class SicAssembler {
                     // Comment Line
                     writeToFile(programLine);
                 }
+                else if (isNullOrEmpty(programLine)) {
+                    continue;
+                }
                 else {
                     item = buildCommand(programLine, opcodes);
                     item.setAddress(address);
