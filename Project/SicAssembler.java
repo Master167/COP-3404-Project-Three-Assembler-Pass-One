@@ -111,19 +111,22 @@ public class SicAssembler {
                 address = 0;
             }
             writeToFile(Integer.toHexString(address)+ "\t" + programLine);
-            while ((programLine = programScanner.nextLine()) != null && !"END".equals(programLine.substring(10, 16).trim().toUpperCase())) {
-                if (programLine.charAt(0) == '.') {
+            while ((programLine = programScanner.nextLine()) != null) {
+                if (isNullOrEmpty(programLine.trim())) {
+                    continue;
+                }
+                else if (programLine.charAt(0) == '.') {
                     // Comment Line
                     writeToFile(programLine);
-                }
-                else if (isNullOrEmpty(programLine)) {
-                    continue;
                 }
                 else {
                     item = buildCommand(programLine, opcodes);
                     item.setAddress(address);
                     if (!isNullOrEmpty(temp = symbols.insertData(item))) {
                         item.addError(temp);
+                    }
+                    if ("END".equals(item.getMneumonic())) {
+                        break;
                     }
                     if (item.getOperandFlag() == '=') {
                         // It's a operand is a literal
@@ -168,10 +171,10 @@ public class SicAssembler {
             if (index == 0 && index < 7) {
                 label = temp;
             }
-            else if (7 <= index && index < 17) {
+            else if (7 <= index && index < 16) {
                 mneumonic = temp;
             }
-            else if (17 <= index && index < 28) {
+            else if (16 <= index && index < 27) {
                 if (temp.charAt(0) == '#' || temp.charAt(0) == '@') {
                     // Operand has a flag
                     temp = temp.substring(1);
@@ -192,7 +195,7 @@ public class SicAssembler {
                     operand = temp;
                 }
             }
-            else if (28 <= index && index < line.length()) {
+            else if (27 <= index && index < line.length()) {
                 comments = temp;
             }
             else {
@@ -201,16 +204,23 @@ public class SicAssembler {
         }
         
         // Validate Strings
-        if (isNullOrEmpty(label)) {
-            error = " No Label Found ";
-        }
         if (isNullOrEmpty(operand)) {
             error += " No Operand ";
         }
 
-        extended = (line.charAt(9) == '+');
-        operandFlag = line.charAt(18);
-        
+        if (line.length() >= 10) {
+            extended = (line.charAt(9) == '+');
+        }
+        else {
+            extended = false;
+        }
+        if (line.length() >= 19) {
+            operandFlag = line.charAt(18);
+        }
+        else {
+            operandFlag = ' ';
+        }
+
         item = new DataItem(label, extended, mneumonic, operandFlag, operand, comments);
         
         if (isNullOrEmpty(mneumonic)) {
