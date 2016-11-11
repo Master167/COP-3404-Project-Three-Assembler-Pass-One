@@ -30,30 +30,32 @@ public class HashTable {
      * @return  
      */
     public String insertData(DataItem item) {
-        int insertionIndex = this.hashFunction(item.getLabel(), this.size);
-        int collisions = 0;
-        boolean searching = true;
         String error = "";
-        
-        while (searching) {
-            if (this.data[insertionIndex] == null) {
-                this.data[insertionIndex] = item;
-                searching = false;
-            }
-            else if (item.equals(this.data[insertionIndex])) {
-                error = "Duplicate Label";
-                //searching = false;
-                collisions++;
-                insertionIndex = this.collisionResolver(insertionIndex, collisions);
-            }
-            else if (collisions > this.size) {
-                // Switching to Linear Probing
-                insertionIndex = (insertionIndex + 1) % this.size;
-            }
-            else {
-                // Going to next cell
-                collisions++;
-                insertionIndex = this.collisionResolver(insertionIndex, collisions);
+        if (!isNullOrEmpty(item.getLabel())) {
+            int insertionIndex = this.hashFunction(item.getLabel(), this.size);
+            int collisions = 0;
+            boolean searching = true;
+            
+            while (searching) {
+                if (this.data[insertionIndex] == null) {
+                    this.data[insertionIndex] = item;
+                    searching = false;
+                }
+                else if (item.equals(this.data[insertionIndex])) {
+                    error = "Duplicate Label";
+                    //searching = false;
+                    collisions++;
+                    insertionIndex = this.collisionResolver(insertionIndex, collisions);
+                }
+                else if (collisions > this.size) {
+                    // Switching to Linear Probing
+                    insertionIndex = (insertionIndex + 1) % this.size;
+                }
+                else {
+                    // Going to next cell
+                    collisions++;
+                    insertionIndex = this.collisionResolver(insertionIndex, collisions);
+                }
             }
         }
         return error;
@@ -164,4 +166,12 @@ public class HashTable {
         return true;
     }
     
+    private boolean isNullOrEmpty(String str) {
+        boolean a = false;
+        if ("".equals(str) || str == null) {
+            a = true;
+        }
+        return a;
+    }
+
 }//end Class HashTable
